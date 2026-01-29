@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+	</head>
+	<body>
+		<h2>This part is not cached</h2>
+		{% block body %}
+			{{render(controller('App\\Controller\\CacheController::index'))}}
+		{% endblock %}
+	</body>
+
+</html>
