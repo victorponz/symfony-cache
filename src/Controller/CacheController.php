@@ -28,27 +28,17 @@ final class CacheController extends AbstractController
         $this->redis->flushdb();
         return new Response("Cache cleared");
     }
-    /**
-     * This controller is rendered by an embedded controler in base.html.twig
-     */
+
     #[Route('/{id}', name: '')]
     public function index($id): Response
     {
-        if ($this->isCached($id)) {
-            // The second time is already cached, so we don't
-            // have to run de long running query
-            return new Response("cache hit" . $this->getCached($id));
-        } else {
-            $data = $this->longRunningQuery($id);
-            $c = $this->render('user.html.twig', ["data" => $data])->getContent();
-            // Save in cache
-            $this->cacheSet($id, $c);
-            return new Response($c);
-        }
+
+        return $this->render('base.html.twig', ["id" => $id]);
 
     }
     private function longRunningQuery($id): array
     {
+        // This is the data returned by this long running query
         return $this->contactos[$id];
     }
 
@@ -56,9 +46,19 @@ final class CacheController extends AbstractController
     {
         return $this->redis->exists($id);
     }
-    private function getCached($id): string
+    public function userTemplate($id): Response
     {
-        return $this->redis->get($id);
+        if ($this->isCached($id)) {
+            // The second time is already cached, so we don't
+            // have to run de long running query
+            return new Response("cache hit" . $this->redis->get($id));
+        } else {
+            $data = $this->longRunningQuery($id);
+            $c = $this->render('user.html.twig', ["data" => $data])->getContent();
+            // Save html in cache
+            $this->cacheSet($id, $c);
+            return new Response($c);
+        }
     }
     private function cacheSet($id, $data): void
     {

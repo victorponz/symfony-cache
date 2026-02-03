@@ -9,7 +9,9 @@
 	</head>
 	<body>
 		<h2>This part is not cached</h2>
-		{% block body %}{% endblock %}
+		{% block body %}
+			{{render(controller('App\\Controller\\CacheController::userTemplate', {'id': id}))}}
+		{% endblock %}
 	</body>
 
 </html>
