@@ -29,6 +29,13 @@ final class CacheController extends AbstractController
         return new Response("Cache cleared");
     }
 
+    #[Route('/cache-invalidate/{id}', name: 'cache-invalidate')]
+    public function invalidate($id): Response
+    {
+        $this->redis->del($id);
+        return new Response("Cache invalidate: " . $id);
+    }
+
     #[Route('/{id}', name: '')]
     public function index($id): Response
     {
